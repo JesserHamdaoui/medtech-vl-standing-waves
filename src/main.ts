@@ -7,27 +7,29 @@ import {
   Mouse,
 } from "matter-js";
 import p5 from "p5";
-import { Ball } from "./components/Ball";
+import { Chain } from "@/components/Chain";
 
 new p5((p) => {
   let engine: Engine;
   let runner: Runner;
-  let ball: Ball;
+  let chain: Chain;
 
   p.setup = () => {
     p.createCanvas(1200, 800);
 
     engine = Engine.create();
+    engine.world.gravity.y = 0;
+
     runner = Runner.create();
     Runner.run(runner, engine);
 
-    ball = new Ball(p, engine, 600, 400);
+    chain = new Chain(p, engine, 60, 400, 61);
   };
 
   p.draw = () => {
-    p.background(167, 213, 229);
+    p.background(189, 223, 235);
     Engine.update(engine);
 
-    ball.display();
+    chain.display();
   };
 });

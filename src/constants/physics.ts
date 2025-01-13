@@ -1,0 +1,9 @@
+export const FIXED_Y = 200;
+export const BALL_RADIUS = 12;
+export const BALL_COUNT = 40;
+export const MASS = 1;
+export const SPACING = 15;
+export const DAMPING = 0.2;
+export const TENSION = 0.2;
+export const AMPLITUDE = 100;
+export const FREQUENCY = 0.5;

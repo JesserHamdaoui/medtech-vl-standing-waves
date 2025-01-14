@@ -1,8 +1,12 @@
 import p5 from "p5";
 import { createSliders } from "@/components/Sliders";
 import { createButtons } from "@/components/Buttons";
-import { drawRulers } from "@/components/Rulers";
-import { drawStopwatch, setupStopwatch } from "@/components/Stopwatch";
+import { drawRulers, handleClickEvents } from "@/components/Rulers";
+import {
+  createStopwatch,
+  toggleStopwatch,
+  updateStopwatch,
+} from "@/components/Stopwatch";
 import { updateBalls } from "@/utils/physics";
 import { drawReferenceLine } from "@/components/ReferenceLine";
 import { displayMetrics } from "@/components/Metrics";
@@ -22,6 +26,8 @@ const sketch = (p: p5) => {
   let isSlowed = false;
   let showRulers = false;
   let showStopwatch = false;
+
+  let dashedLines: { x: number; y: number }[] = [];
 
   // Oscillation properties
   let amplitude = AMPLITUDE;
@@ -72,10 +78,11 @@ const sketch = (p: p5) => {
       showRulers = !showRulers;
     };
 
+    createStopwatch(p);
     const onStopwatch = () => {
       showStopwatch = !showStopwatch;
       if (showStopwatch) {
-        setupStopwatch(p);
+        toggleStopwatch();
       }
     };
 
@@ -99,6 +106,11 @@ const sketch = (p: p5) => {
         acceleration: 0,
       });
     }
+
+    // Handle mouse click events (left-click for new line, right-click for removing lines)
+    handleClickEvents(p, dashedLines, (newDashedLines) => {
+      dashedLines = newDashedLines;
+    });
   };
 
   p.draw = () => {
@@ -107,7 +119,7 @@ const sketch = (p: p5) => {
     p.background(240);
 
     if (showRulers) {
-      drawRulers(p);
+      drawRulers(p, dashedLines); // Draw rulers and any dashed lines
     }
 
     drawReferenceLine(p, balls, FIXED_Y);
@@ -132,12 +144,7 @@ const sketch = (p: p5) => {
     displayMetrics(p, { amplitude, frequency, damping, tension });
 
     if (showStopwatch) {
-      drawStopwatch(p);
-    }
-
-    if (dragging) {
-      balls[0].y = p.mouseY;
-      balls[0].vy = 0;
+      updateStopwatch(p);
     }
   };
 

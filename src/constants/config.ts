@@ -1,4 +1,4 @@
-export const AMPLITUDE_MAX = 300;
+export const AMPLITUDE_MAX = 3;
 export const AMPLITUDE_MIN = 0;
 export const FREQUENCY_MAX = 1;
 export const FREQUENCY_MIN = 0;

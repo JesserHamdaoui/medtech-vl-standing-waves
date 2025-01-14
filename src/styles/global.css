@@ -4,8 +4,16 @@ body {
   padding: 0;
   box-sizing: border-box;
   background-color: #f0f0f0;
-  display: flex;
+  /* display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 100vh; */
+}
+
+canvas {
+  margin-left: 250px;
+}
+
+#stopwatch {
+  margin-left: 1050px;
 }

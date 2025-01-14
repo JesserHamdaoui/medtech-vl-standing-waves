@@ -25,6 +25,7 @@ export const updateBalls = (
   p: p5
 ) => {
   const { amplitude, frequency, damping, tension } = params;
+  const convertedAmplitude = amplitude * 50; // Convert amplitude to pixels
 
   // Force damping to 0 only if oscillating parameter is off
   const dampedDamping = oscillating ? damping : 0;
@@ -33,7 +34,8 @@ export const updateBalls = (
   if (oscillating) {
     balls[0].y =
       FIXED_Y +
-      Math.min(amplitude, MAX_AMPLITUDE) * p.sin(p.frameCount * frequency);
+      Math.min(convertedAmplitude, MAX_AMPLITUDE) *
+        p.sin(p.frameCount * frequency);
   }
 
   // Iterate over the balls and apply tension and damping forces

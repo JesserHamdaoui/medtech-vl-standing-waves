@@ -10,6 +10,8 @@ import {
   TENSION_MIN,
 } from "@/constants/config";
 
+import { AMPLITUDE, FREQUENCY, DAMPING, TENSION } from "@/constants/physics";
+
 export const createAmplitudeSlider = (
   p: p5,
   onChange: (value: number) => void
@@ -18,10 +20,7 @@ export const createAmplitudeSlider = (
   amplitudeLabel.position(10, 0);
 
   // Create the input field for amplitude
-  const amplitudeInput = p.createInput(
-    ((AMPLITUDE_MIN + AMPLITUDE_MAX) / 2).toString(),
-    "number"
-  );
+  const amplitudeInput = p.createInput(AMPLITUDE.toString(), "number");
   amplitudeInput.position(10, 30);
   amplitudeInput.style("width", "100px");
 
@@ -60,10 +59,7 @@ export const createFrequencySlider = (
   frequencyLabel.position(10, 50);
 
   // Create the input field for frequency
-  const frequencyInput = p.createInput(
-    ((FREQUENCY_MIN + FREQUENCY_MAX) / 2).toString(),
-    "number"
-  );
+  const frequencyInput = p.createInput(FREQUENCY.toString(), "number");
   frequencyInput.position(10, 80);
   frequencyInput.style("width", "100px");
 
@@ -103,7 +99,7 @@ export const createDampingSlider = (
   const dampingSlider = p.createSlider(
     DAMPING_MIN,
     DAMPING_MAX,
-    (DAMPING_MIN + DAMPING_MAX) / 2,
+    DAMPING,
     0.01 // Step value for damping
   );
   dampingSlider.position(10, 130);
@@ -121,7 +117,7 @@ export const createTensionSlider = (
   const tensionSlider = p.createSlider(
     TENSION_MIN,
     TENSION_MAX,
-    (TENSION_MIN + TENSION_MAX) / 2,
+    TENSION,
     0.001 // Step value for tension
   );
   tensionSlider.position(10, 180);

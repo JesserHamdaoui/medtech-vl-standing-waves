@@ -74,9 +74,7 @@ const sketch = (p: p5) => {
 
     const onStopwatch = () => {
       showStopwatch = !showStopwatch;
-      if (!showStopwatch) {
-        stopwatchTime = 0;
-      } else {
+      if (showStopwatch) {
         setupStopwatch(p);
       }
     };

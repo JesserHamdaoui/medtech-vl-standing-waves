@@ -1,4 +1,6 @@
-export const drawDashedLine = (
+import p5 from "p5";
+
+export const drawReferenceLine = (
   p: p5,
   balls: { x: number; y: number }[],
   fixedY: number
@@ -14,11 +16,4 @@ export const drawDashedLine = (
   }
 
   p.drawingContext.setLineDash([]);
-};
-
-export const displayMetrics = (p: p5, balls: { y: number }[]) => {
-  p.fill(0);
-  p.textSize(16);
-  p.text(`Amplitude: ${AMPLITUDE} cm`, 20, 370);
-  p.text(`Frequency: ${FREQUENCY} Hz`, 200, 370);
 };

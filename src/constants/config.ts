@@ -1,0 +1,12 @@
+export const AMPLITUDE_MAX = 300;
+export const AMPLITUDE_MIN = 0;
+export const FREQUENCY_MAX = 2;
+export const FREQUENCY_MIN = 0;
+export const DAMPING_MAX = 1;
+export const DAMPING_MIN = 0.01;
+export const TENSION_MAX = 2;
+export const TENSION_MIN = 0.01;
+export const FIXED_Y = 200;
+export const BALL_RADIUS = 12;
+export const BALL_COUNT = 40;
+export const BALL_SPACING = 15;

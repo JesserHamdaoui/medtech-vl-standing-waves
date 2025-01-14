@@ -1,3 +1,5 @@
+import p5 from "p5";
+
 export const drawRulers = (p: p5) => {
   const pxPerCM = 50;
   const originX = 20;

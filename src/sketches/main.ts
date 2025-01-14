@@ -1,43 +1,146 @@
-import { createSliders } from "../components/Sliders";
-import { createButtons } from "../components/Buttons";
-import { drawRulers } from "../components/Rulers";
-import { drawStopwatch } from "../components/Stopwatch";
-import { updateBalls, resetSimulation } from "../utils/physics";
-import { drawDashedLine, displayMetrics } from "../utils/drawing";
-import { BALL_COUNT, FIXED_Y, BALL_RADIUS } from "../constants/physics";
+import p5 from "p5";
+import { createSliders } from "@/components/Sliders";
+import { createButtons } from "@/components/Buttons";
+import { drawRulers } from "@/components/Rulers";
+import { drawStopwatch, setupStopwatch } from "@/components/Stopwatch";
+import { updateBalls } from "@/utils/physics";
+import { drawReferenceLine } from "@/components/ReferenceLine";
+import { displayMetrics } from "@/components/Metrics";
+import { AMPLITUDE, FREQUENCY, DAMPING, TENSION } from "@/constants/physics";
+import {
+  FIXED_Y,
+  BALL_RADIUS,
+  BALL_COUNT,
+  BALL_SPACING,
+} from "@/constants/config";
 
 const sketch = (p: p5) => {
   let balls: { x: number; y: number; vy: number; acceleration: number }[] = [];
   let dragging = false;
   let oscillating = false;
+  let isPaused = false;
+  let isSlowed = false;
+  let showRulers = false;
+  let showStopwatch = false;
+
+  // Oscillation properties
+  let amplitude = AMPLITUDE;
+  let frequency = FREQUENCY;
+  let damping = DAMPING;
+  let tension = TENSION;
 
   p.setup = () => {
     p.createCanvas(800, 400);
     p.frameRate(120);
 
-    // Setup Sliders and Buttons
-    createSliders(p);
+    // Setup sliders
+    createSliders(
+      p,
+      (value) => (amplitude = value),
+      (value) => (frequency = value),
+      (value) => (damping = value),
+      (value) => (tension = value)
+    );
+
+    // Button actions
+    const onStart = () => {
+      oscillating = true;
+    };
+
+    const onReset = () => {
+      oscillating = false;
+      isPaused = false;
+      isSlowed = false;
+      p.frameRate(120);
+      balls.forEach((ball) => {
+        ball.y = FIXED_Y;
+        ball.vy = 0;
+        ball.acceleration = 0;
+      });
+    };
+
+    const onPause = () => {
+      isPaused = !isPaused;
+    };
+
+    const onSlowMotion = () => {
+      isSlowed = !isSlowed;
+      p.frameRate(isSlowed ? 30 : 120);
+    };
+
+    const onRulers = () => {
+      showRulers = !showRulers;
+    };
+
+    const onStopwatch = () => {
+      showStopwatch = !showStopwatch;
+      if (!showStopwatch) {
+        stopwatchTime = 0;
+      } else {
+        setupStopwatch(p);
+      }
+    };
+
+    // Setup buttons
     createButtons(
       p,
-      () => {
-        oscillating = true;
-      },
-      resetSimulation.bind(null, balls, FIXED_Y)
+      onStart,
+      onReset,
+      onPause,
+      onSlowMotion,
+      onRulers,
+      onStopwatch
     );
 
     // Initialize balls
     for (let i = 0; i < BALL_COUNT; i++) {
-      balls.push({ x: 100 + i * 15, y: FIXED_Y, vy: 0, acceleration: 0 });
+      balls.push({
+        x: 100 + i * BALL_SPACING,
+        y: FIXED_Y,
+        vy: 0,
+        acceleration: 0,
+      });
     }
   };
 
   p.draw = () => {
+    if (isPaused) return;
+
     p.background(240);
 
-    // Drawing the simulation
-    drawDashedLine(p, balls, FIXED_Y);
-    if (oscillating) updateBalls(balls);
-    displayMetrics(p, balls);
+    if (showRulers) {
+      drawRulers(p);
+    }
+
+    drawReferenceLine(p, balls, FIXED_Y);
+
+    // Draw springs and balls
+    p.stroke(50);
+    p.fill(150);
+    for (let i = 0; i < balls.length; i++) {
+      if (i < balls.length - 1) {
+        p.line(balls[i].x, balls[i].y, balls[i + 1].x, balls[i + 1].y);
+      }
+      p.ellipse(balls[i].x, balls[i].y, BALL_RADIUS);
+    }
+
+    updateBalls(
+      balls,
+      { amplitude, frequency, damping, tension },
+      oscillating,
+      p
+    );
+
+    displayMetrics(p, { amplitude, frequency, damping, tension });
+
+    if (showStopwatch) {
+      drawStopwatch(p);
+    }
+
+    if (dragging) {
+      balls[0].y = p.mouseY;
+      balls[0].vy = 0;
+    }
   };
 
   p.mousePressed = () => {

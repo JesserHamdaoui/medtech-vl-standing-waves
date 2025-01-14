@@ -1,17 +1,41 @@
+import p5 from "p5";
+import { MASS } from "@/constants/physics";
+import { FIXED_Y } from "@/constants/config";
+
+interface Ball {
+  x: number;
+  y: number;
+  vy: number;
+  acceleration: number;
+}
+
+interface SimulationParams {
+  amplitude: number;
+  frequency: number;
+  damping: number;
+  tension: number;
+}
+
 export const updateBalls = (
-  balls: { x: number; y: number; vy: number; acceleration: number }[]
+  balls: Ball[],
+  params: SimulationParams,
+  oscillating: boolean,
+  p: p5
 ) => {
-  // First ball updates with oscillating equation
-  balls[0].y = FIXED_Y + AMPLITUDE * Math.sin(p.frameCount * FREQUENCY);
+  const { amplitude, frequency, damping, tension } = params;
+
+  if (oscillating) {
+    balls[0].y = FIXED_Y + amplitude * p.sin(p.frameCount * frequency);
+  }
 
   for (let i = 1; i < balls.length; i++) {
     const current = balls[i];
     const prev = balls[i - 1];
     const next = i < balls.length - 1 ? balls[i + 1] : null;
 
-    const forcePrev = TENSION * (prev.y - current.y);
-    const forceNext = next ? TENSION * (next.y - current.y) : 0;
-    const dampingForce = -DAMPING * current.vy;
+    const forcePrev = tension * (prev.y - current.y);
+    const forceNext = next ? tension * (next.y - current.y) : 0;
+    const dampingForce = -damping * current.vy;
     const netForce = forcePrev + forceNext + dampingForce;
 
     current.acceleration = netForce / MASS;
@@ -19,13 +43,8 @@ export const updateBalls = (
     current.y += current.vy;
   }
 
-  // Last ball is fixed
   const lastBall = balls[balls.length - 1];
   lastBall.y = FIXED_Y;
   lastBall.vy = 0;
   lastBall.acceleration = 0;
-};
-
-export const resetSimulation = (balls: { y: number }[], fixedY: number) => {
-  balls.forEach((ball) => (ball.y = fixedY));
 };

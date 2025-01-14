@@ -17,6 +17,7 @@ export const createAmplitudeSlider = (
   onChange: (value: number) => void
 ) => {
   const amplitudeLabel = p.createP("Amplitude");
+  (amplitudeLabel.elt as HTMLElement).setAttribute("id", "amplitude-label");
   amplitudeLabel.position(10, 0);
 
   // Create the input field for amplitude
@@ -56,6 +57,7 @@ export const createFrequencySlider = (
   onChange: (value: number) => void
 ) => {
   const frequencyLabel = p.createP("Frequency");
+  (frequencyLabel.elt as HTMLElement).setAttribute("id", "frequency-label");
   frequencyLabel.position(10, 50);
 
   // Create the input field for frequency
@@ -95,6 +97,7 @@ export const createDampingSlider = (
   onChange: (value: number) => void
 ) => {
   const dampingLabel = p.createP("Damping");
+  (dampingLabel.elt as HTMLElement).setAttribute("id", "damping-label");
   dampingLabel.position(10, 100);
   const dampingSlider = p.createSlider(
     DAMPING_MIN,
@@ -113,6 +116,7 @@ export const createTensionSlider = (
   onChange: (value: number) => void
 ) => {
   const tensionLabel = p.createP("Tension");
+  (tensionLabel.elt as HTMLElement).setAttribute("id", "tension-label");
   tensionLabel.position(10, 150);
   const tensionSlider = p.createSlider(
     TENSION_MIN,

@@ -50,7 +50,7 @@ export const drawRulers = (p: p5, dashedLines: { x: number; y: number }[]) => {
   }
 
   // Draw dashed lines if there are any (horizontal and vertical)
-  p.stroke(255, 0, 0);
+  p.stroke(37, 150, 190);
   p.strokeWeight(2);
   p.drawingContext.setLineDash([5, 15]); // Red dashed line
   dashedLines.forEach((line) => {

@@ -116,7 +116,7 @@ const sketch = (p: p5) => {
   p.draw = () => {
     if (isPaused) return;
 
-    p.background(240);
+    p.background(212, 229, 240);
 
     if (showRulers) {
       drawRulers(p, dashedLines); // Draw rulers and any dashed lines
@@ -125,8 +125,8 @@ const sketch = (p: p5) => {
     drawReferenceLine(p, balls, FIXED_Y);
 
     // Draw springs and balls
-    p.stroke(50);
-    p.fill(150);
+    p.stroke(37, 150, 190);
+    p.fill(37, 150, 190);
     for (let i = 0; i < balls.length; i++) {
       if (i < balls.length - 1) {
         p.line(balls[i].x, balls[i].y, balls[i + 1].x, balls[i + 1].y);

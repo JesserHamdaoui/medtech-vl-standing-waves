@@ -15,8 +15,19 @@ export const displayMetrics = (
 
   // Displaying the metrics based on the params object
 
-  createDiv("amplitude", `Amplitude: ${params.amplitude} cm`);
-  createDiv("frequency", `Frequency: ${params.frequency} Hz`);
-  createDiv("damping", `Damping: ${params.damping}`);
-  createDiv("tension", `Tension: ${params.tension}`);
+  const amplitudeDiv = createDiv(
+    "amplitude",
+    `Amplitude: ${params.amplitude} cm`
+  );
+  const frequencyDiv = createDiv(
+    "frequency",
+    `Frequency: ${params.frequency} Hz`
+  );
+  const dampingDiv = createDiv("damping", `Damping: ${params.damping}`);
+  const tensionDiv = createDiv("tension", `Tension: ${params.tension}`);
+
+  amplitudeDiv.setAttribute("id", "amplitude");
+  frequencyDiv.setAttribute("id", "frequency");
+  dampingDiv.setAttribute("id", "damping");
+  tensionDiv.setAttribute("id", "tension");
 };

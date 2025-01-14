@@ -6,6 +6,7 @@ export const createDiv = (id: string, text: string) => {
     document.body.appendChild(div);
   }
   div.innerText = text;
+  return div;
 };
 
 export const createButton = (id: string, text: string, onClick: () => void) => {

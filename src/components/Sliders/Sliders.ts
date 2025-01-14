@@ -16,16 +16,40 @@ export const createAmplitudeSlider = (
 ) => {
   const amplitudeLabel = p.createP("Amplitude");
   amplitudeLabel.position(10, 0);
-  const amplitudeSlider = p.createSlider(
-    AMPLITUDE_MIN,
-    AMPLITUDE_MAX,
-    (AMPLITUDE_MIN + AMPLITUDE_MAX) / 2,
-    0.1 // Step value for amplitude
+
+  // Create the input field for amplitude
+  const amplitudeInput = p.createInput(
+    ((AMPLITUDE_MIN + AMPLITUDE_MAX) / 2).toString(),
+    "number"
   );
-  amplitudeSlider.position(10, 30);
-  amplitudeSlider.style("width", "200px");
-  amplitudeSlider.input(() => onChange(amplitudeSlider.value() as number));
-  return amplitudeSlider;
+  amplitudeInput.position(10, 30);
+  amplitudeInput.style("width", "100px");
+
+  // Create stepper increment and decrement buttons
+  const decrementButton = p.createButton("-");
+  decrementButton.position(120, 30);
+  decrementButton.mousePressed(() => {
+    let value = parseFloat(amplitudeInput.value() as string);
+    value = Math.max(AMPLITUDE_MIN, value - 0.1); // Step of 0.1 (adjustable)
+    amplitudeInput.value(value.toFixed(1));
+    onChange(value);
+  });
+
+  const incrementButton = p.createButton("+");
+  incrementButton.position(150, 30);
+  incrementButton.mousePressed(() => {
+    let value = parseFloat(amplitudeInput.value() as string);
+    value = Math.min(AMPLITUDE_MAX, value + 0.1); // Step of 0.1 (adjustable)
+    amplitudeInput.value(value.toFixed(1));
+    onChange(value);
+  });
+
+  // Handle input change directly
+  amplitudeInput.input(() => {
+    onChange(parseFloat(amplitudeInput.value() as string));
+  });
+
+  return amplitudeInput;
 };
 
 export const createFrequencySlider = (
@@ -34,16 +58,40 @@ export const createFrequencySlider = (
 ) => {
   const frequencyLabel = p.createP("Frequency");
   frequencyLabel.position(10, 50);
-  const frequencySlider = p.createSlider(
-    FREQUENCY_MIN,
-    FREQUENCY_MAX,
-    (FREQUENCY_MIN + FREQUENCY_MAX) / 2,
-    0.1 // Step value for frequency
+
+  // Create the input field for frequency
+  const frequencyInput = p.createInput(
+    ((FREQUENCY_MIN + FREQUENCY_MAX) / 2).toString(),
+    "number"
   );
-  frequencySlider.position(10, 80);
-  frequencySlider.style("width", "200px");
-  frequencySlider.input(() => onChange(frequencySlider.value() as number));
-  return frequencySlider;
+  frequencyInput.position(10, 80);
+  frequencyInput.style("width", "100px");
+
+  // Create stepper increment and decrement buttons
+  const decrementButton = p.createButton("-");
+  decrementButton.position(120, 80);
+  decrementButton.mousePressed(() => {
+    let value = parseFloat(frequencyInput.value() as string);
+    value = Math.max(FREQUENCY_MIN, value - 0.1); // Step of 0.1 (adjustable)
+    frequencyInput.value(value.toFixed(1));
+    onChange(value);
+  });
+
+  const incrementButton = p.createButton("+");
+  incrementButton.position(150, 80);
+  incrementButton.mousePressed(() => {
+    let value = parseFloat(frequencyInput.value() as string);
+    value = Math.min(FREQUENCY_MAX, value + 0.1); // Step of 0.1 (adjustable)
+    frequencyInput.value(value.toFixed(1));
+    onChange(value);
+  });
+
+  // Handle input change directly
+  frequencyInput.input(() => {
+    onChange(parseFloat(frequencyInput.value() as string));
+  });
+
+  return frequencyInput;
 };
 
 export const createDampingSlider = (
@@ -74,7 +122,7 @@ export const createTensionSlider = (
     TENSION_MIN,
     TENSION_MAX,
     (TENSION_MIN + TENSION_MAX) / 2,
-    0.1 // Step value for tension
+    0.001 // Step value for tension
   );
   tensionSlider.position(10, 180);
   tensionSlider.style("width", "200px");

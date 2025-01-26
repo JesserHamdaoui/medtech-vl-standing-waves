@@ -122,10 +122,48 @@ export const createTensionSlider = (
     TENSION_MIN,
     TENSION_MAX,
     TENSION,
-    0.001 // Step value for tension
+    50 // Step value for tension
   );
   tensionSlider.position(10, 180);
   tensionSlider.style("width", "200px");
   tensionSlider.input(() => onChange(tensionSlider.value() as number));
   return tensionSlider;
+};
+
+export const createTensionFactorSlider = (
+  p: p5,
+  onChange: (value: number) => void
+) => {
+  const tensionFactorLabel = p.createP("Tension Factor");
+  (tensionFactorLabel.elt as HTMLElement).setAttribute(
+    "id",
+    "tension-factor-label"
+  );
+  tensionFactorLabel.position(10, 200);
+  const tensionFactorSlider = p.createSlider(0.1, 1.0, 1.0, 0.01);
+  tensionFactorSlider.position(10, 230);
+  tensionFactorSlider.style("width", "200px");
+  tensionFactorSlider.input(() =>
+    onChange(tensionFactorSlider.value() as number)
+  );
+  return tensionFactorSlider;
+};
+
+export const createDampingFactorSlider = (
+  p: p5,
+  onChange: (value: number) => void
+) => {
+  const dampingFactorLabel = p.createP("Damping Factor");
+  (dampingFactorLabel.elt as HTMLElement).setAttribute(
+    "id",
+    "damping-factor-label"
+  );
+  dampingFactorLabel.position(10, 250);
+  const dampingFactorSlider = p.createSlider(0, 1.0, 1.0, 0.01);
+  dampingFactorSlider.position(10, 280);
+  dampingFactorSlider.style("width", "200px");
+  dampingFactorSlider.input(() =>
+    onChange(dampingFactorSlider.value() as number)
+  );
+  return dampingFactorSlider;
 };

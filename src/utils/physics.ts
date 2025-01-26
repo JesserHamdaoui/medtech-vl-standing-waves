@@ -1,67 +1,79 @@
-import p5 from "p5";
-import { MASS } from "@/constants/physics";
+import p from "p5";
 import { FIXED_Y } from "@/constants/config";
+import { MASS } from "@/constants/physics";
 
 interface Ball {
   x: number;
   y: number;
   vy: number;
-  acceleration: number;
+  ay: number;
 }
 
-interface SimulationParams {
+interface Params {
   amplitude: number;
   frequency: number;
-  damping: number;
-  tension: number;
+  dampingCoefficient: number;
+  springConstant: number;
+  springFactor: number;
+  dampingFactor: number;
 }
-
-const MAX_AMPLITUDE = 200; // Optionally limit amplitude to prevent runaway energy.
 
 export const updateBalls = (
   balls: Ball[],
-  params: SimulationParams,
-  oscillating: boolean,
-  p: p5
+  time: number,
+  p: p,
+  params: Params
 ) => {
-  const { amplitude, frequency, damping, tension } = params;
-  const convertedAmplitude = amplitude * 50; // Convert amplitude to pixels
+  const deltaTime = p.deltaTime / 1000; // Time step in seconds
+  const {
+    amplitude,
+    frequency,
+    dampingCoefficient,
+    springConstant,
+    springFactor,
+    dampingFactor,
+  } = params;
 
-  // Force damping to 0 only if oscillating parameter is off
-  const dampedDamping = oscillating ? damping : 0;
+  const tensionContribution =
+    (springFactor * springConstant * deltaTime * deltaTime) / MASS; // Scaled tension force
+  const dampingContribution =
+    (dampingFactor * 2 * dampingCoefficient * deltaTime) / MASS; // Scaled damping force
+  const convertedAmplitude = amplitude * 50;
 
-  // Apply controlled oscillation to the first ball
-  if (oscillating) {
-    balls[0].y =
-      FIXED_Y +
-      Math.min(convertedAmplitude, MAX_AMPLITUDE) *
-        p.sin(p.frameCount * frequency);
-  }
+  // Update the first ball based on oscillation
+  const firstBall = balls[0];
+  const omega = 2 * Math.PI * frequency; // Angular frequency
+  firstBall.y = FIXED_Y + convertedAmplitude * Math.sin(omega * time); // Oscillating motion
+  firstBall.vy = omega * convertedAmplitude * Math.cos(omega * time); // Velocity of first ball
+  firstBall.ay = 0; // No acceleration directly applied
 
-  // Iterate over the balls and apply tension and damping forces
+  // Update subsequent balls, keeping the last ball fixed
   for (let i = 1; i < balls.length; i++) {
-    const current = balls[i];
-    const prev = balls[i - 1];
-    const next = i < balls.length - 1 ? balls[i + 1] : null;
+    const ball = balls[i];
 
-    // Calculate the forces (tension, damping, and net force)
-    const forcePrev = tension * (prev.y - current.y);
-    const forceNext = next ? tension * (next.y - current.y) : 0;
-    const dampingForce = -dampedDamping * current.vy; // Only apply damping when not oscillating
-    const netForce = forcePrev + forceNext + dampingForce;
+    // Skip updates for the last ball
+    if (i === balls.length - 1) {
+      ball.y = FIXED_Y; // Ensure it stays fixed
+      ball.vy = 0; // No velocity for the fixed ball
+      ball.ay = 0; // No acceleration for the fixed ball
+      continue;
+    }
 
-    // Calculate acceleration and update velocity and position using more precise integration
-    current.acceleration = netForce / MASS;
-    current.vy += current.acceleration;
-    current.y += current.vy;
+    const prevBall = balls[i - 1];
+    const nextBall = balls[i + 1];
 
-    // Check for numerical stability, and limit the position to prevent excessive growth
-    current.y = Math.min(Math.max(current.y, FIXED_Y - 500), FIXED_Y + 500); // Example range
+    // Calculate the forces acting on the ball
+    const forceFromPrev = tensionContribution * (prevBall.y - ball.y);
+    const forceFromNext =
+      i < balls.length - 1 ? tensionContribution * (nextBall.y - ball.y) : 0;
+
+    const dampingForce = dampingContribution * ball.vy; // Independent of tension
+
+    // Compute acceleration based on net forces
+    ball.ay = (forceFromPrev + forceFromNext - dampingForce) / MASS;
+
+    // Update velocity and position
+    ball.vy += ball.ay * deltaTime;
+    ball.y += ball.vy * deltaTime;
   }
-
-  // Last ball is fixed at the position
-  const lastBall = balls[balls.length - 1];
-  lastBall.y = FIXED_Y;
-  lastBall.vy = 0;
-  lastBall.acceleration = 0;
 };

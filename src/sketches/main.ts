@@ -1,141 +1,118 @@
 import p5 from "p5";
-import { createSliders } from "@/components/Sliders";
+import { WaveModel } from "@/models/WaveModel";
+import { createControls } from "@/components/Parameters";
 import { createButtons } from "@/components/Buttons";
-import { drawRulers, handleClickEvents } from "@/components/Rulers";
-import {
-  createStopwatch,
-  toggleStopwatch,
-  updateStopwatch,
-} from "@/components/Stopwatch";
-import { updateBalls } from "@/utils/physics";
+import { drawRulers } from "@/components/Rulers";
 import { drawReferenceLine } from "@/components/ReferenceLine";
 import { displayMetrics } from "@/components/Metrics";
-import { AMPLITUDE, FREQUENCY, DAMPING, TENSION } from "@/constants/physics";
 import {
   FIXED_Y,
   BALL_RADIUS,
   BALL_COUNT,
   BALL_SPACING,
 } from "@/constants/config";
+import { TimeSpeed } from "@/types/TimeSpeed";
 
 const sketch = (p: p5) => {
-  let balls: { x: number; y: number; vy: number; ay: number }[] = [];
-  let dashedLines: { x: number; y: number }[] = [];
-  let oscillating = false;
-  let isPaused = false;
-  let isSlowed = false;
-  let showRulers = false;
-  let showStopwatch = false;
-
-  let amplitude = AMPLITUDE;
-  let frequency = FREQUENCY;
-  let damping = DAMPING;
-  let springConstant = TENSION;
-  let springFactor = 1.0;
-  let dampingFactor = 1.0;
+  let model: WaveModel;
+  let balls: { x: number; y: number }[] = [];
 
   p.setup = () => {
     p.createCanvas(800, 400);
     p.frameRate(120);
 
-    createSliders(
+    // Initialize model
+    model = new WaveModel();
+
+    // Initialize balls positions at FIXED_Y
+    balls = Array.from({ length: BALL_COUNT }, (_, i) => ({
+      x: 100 + i * BALL_SPACING,
+      y: FIXED_Y,
+    }));
+
+    // Create UI controls
+    createControls(
       p,
-      (value) => (amplitude = value),
-      (value) => (frequency = value),
-      // (value) => {
-      //   damping = value;
-      // },
-      // (value) => {
-      //   springConstant = value;
-      // },
-      (value) => (springFactor = value), // Spring normalization
-      (value) => (dampingFactor = value) // Damping normalization
+      (value) => (model.amplitudeProperty.value = value),
+      (value) => (model.frequencyProperty.value = value),
+      (value) => (model.tensionProperty.value = value),
+      (value) => (model.dampingProperty.value = value),
+      () => model.toggleEndMode()
     );
 
     createButtons(
       p,
-      () => (oscillating = true), // Start
+      () => (model.isOscillatingProperty.value = true),
+      () => model.manualRestart(),
+      () => (model.isPlayingProperty.value = !model.isPlayingProperty.value),
       () => {
-        // Reset
-        oscillating = false;
-        isPaused = false;
-        isSlowed = false;
-        p.frameRate(120);
-        balls.forEach((ball) => {
-          ball.y = FIXED_Y;
-          ball.vy = 0;
-          ball.ay = 0;
-        });
+        model.timeSpeedProperty.value =
+          model.timeSpeedProperty.value === TimeSpeed.NORMAL
+            ? TimeSpeed.SLOW
+            : TimeSpeed.NORMAL;
+        p.frameRate(
+          model.timeSpeedProperty.value === TimeSpeed.SLOW ? 30 : 120
+        );
       },
-      () => (isPaused = !isPaused), // Pause
-      () => {
-        // Slow motion
-        isSlowed = !isSlowed;
-        p.frameRate(isSlowed ? 30 : 120);
-      },
-      () => (showRulers = !showRulers), // Toggle rulers
-      () => {
-        // Toggle stopwatch
-        showStopwatch = !showStopwatch;
-        if (showStopwatch) toggleStopwatch();
-      }
+      () =>
+        (model.rulersVisibleProperty.value =
+          !model.rulersVisibleProperty.value),
+      () =>
+        (model.referenceLineVisibleProperty.value =
+          !model.referenceLineVisibleProperty.value)
     );
 
-    createStopwatch(p);
-
-    for (let i = 0; i < BALL_COUNT; i++) {
-      balls.push({
-        x: 100 + i * BALL_SPACING,
-        y: FIXED_Y,
-        vy: 0,
-        ay: 0,
-      });
-    }
-
-    handleClickEvents(p, dashedLines, (newDashedLines) => {
-      dashedLines = newDashedLines;
+    // Listen for model updates
+    model.yNowChangedEmitter.addListener(() => {
+      // Get positions from model and update ball positions
+      const positions = model.getPositions();
+      for (let i = 0; i < balls.length; i++) {
+        // Positions from model are already relative to FIXED_Y
+        balls[i].y = positions[i];
+      }
     });
   };
 
   p.draw = () => {
-    if (isPaused) return;
+    const dt = p.deltaTime / 1000;
 
-    const time = p.millis() / 1000; // Time in seconds
+    // Update model
+    model.step(dt);
+
+    // Draw
     p.background(212, 229, 240);
 
-    if (showRulers) drawRulers(p, dashedLines);
-    drawReferenceLine(p, balls, FIXED_Y);
+    // Draw reference line at FIXED_Y
+    if (model.referenceLineVisibleProperty.value) {
+      drawReferenceLine(p, balls, FIXED_Y);
+    }
 
-    // Draw balls and connecting lines
+    // Draw rulers if visible
+    if (model.rulersVisibleProperty.value) {
+      drawRulers(p, []);
+    }
+
+    // Draw string
     p.stroke(37, 150, 190);
     p.fill(37, 150, 190);
 
+    // Draw balls and connecting lines
     balls.forEach((ball, i) => {
+      // Draw line to next ball
       if (i < balls.length - 1) {
         p.line(ball.x, ball.y, balls[i + 1].x, balls[i + 1].y);
       }
+      // Draw ball
       p.ellipse(ball.x, ball.y, BALL_RADIUS);
     });
 
-    if (oscillating) {
-      updateBalls(balls, time, p, {
-        amplitude,
-        frequency,
-        dampingCoefficient: damping,
-        springConstant,
-        springFactor,
-        dampingFactor,
-      });
-    }
-
+    // Display metrics
     displayMetrics(p, {
-      amplitude,
-      frequency,
-      damping,
-      tension: springConstant,
+      amplitude: model.amplitudeProperty.value,
+      frequency: model.frequencyProperty.value,
+      damping: model.dampingProperty.value,
+      tension: model.tensionProperty.value,
     });
-
-    if (showStopwatch) updateStopwatch(p);
   };
 };
 

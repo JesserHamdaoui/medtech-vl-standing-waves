@@ -1,12 +1,13 @@
-export const AMPLITUDE_MAX = 3;
-export const AMPLITUDE_MIN = 0;
-export const FREQUENCY_MAX = 1;
-export const FREQUENCY_MIN = 0;
-export const DAMPING_MAX = 1;
-export const DAMPING_MIN = 0;
-export const TENSION_MAX = 1000;
-export const TENSION_MIN = 100;
+// Display configuration
 export const FIXED_Y = 200;
-export const BALL_RADIUS = 12;
-export const BALL_COUNT = 40;
-export const BALL_SPACING = 15;
+export const BALL_RADIUS = 8;
+export const BALL_COUNT = 61; // Match NUMBER_OF_SEGMENTS
+export const BALL_SPACING = 10;
+
+// Slider positions
+export const CONTROL_X = 20;
+export const STEPPER_Y_START = 20;
+export const STEPPER_Y_SPACING = 60;
+export const SLIDER_Y_START = 160;
+export const SLIDER_Y_SPACING = 60;
+export const LABEL_OFFSET = 140;

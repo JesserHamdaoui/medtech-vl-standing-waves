@@ -19,7 +19,7 @@ import {
 } from "@/constants/config";
 
 const sketch = (p: p5) => {
-  let balls: { x: number; y: number; vy: number; ay: number }[] = [];
+  let balls: { x: number; y: number }[] = [];
   let dashedLines: { x: number; y: number }[] = [];
   let oscillating = false;
   let isPaused = false;
@@ -30,7 +30,8 @@ const sketch = (p: p5) => {
   let amplitude = AMPLITUDE;
   let frequency = FREQUENCY;
   let damping = DAMPING;
-  let springConstant = TENSION;
+  let tension = TENSION;
+
   let springFactor = 1.0;
   let dampingFactor = 1.0;
 
@@ -42,40 +43,31 @@ const sketch = (p: p5) => {
       p,
       (value) => (amplitude = value),
       (value) => (frequency = value),
-      // (value) => {
-      //   damping = value;
-      // },
-      // (value) => {
-      //   springConstant = value;
-      // },
-      (value) => (springFactor = value), // Spring normalization
-      (value) => (dampingFactor = value) // Damping normalization
+      (value) => (damping = value),
+      (value) => (tension = value),
+      (value) => (springFactor = value),
+      (value) => (dampingFactor = value)
     );
 
     createButtons(
       p,
-      () => (oscillating = true), // Start
+      () => (oscillating = true),
       () => {
-        // Reset
         oscillating = false;
         isPaused = false;
         isSlowed = false;
         p.frameRate(120);
         balls.forEach((ball) => {
           ball.y = FIXED_Y;
-          ball.vy = 0;
-          ball.ay = 0;
         });
       },
-      () => (isPaused = !isPaused), // Pause
+      () => (isPaused = !isPaused),
       () => {
-        // Slow motion
         isSlowed = !isSlowed;
         p.frameRate(isSlowed ? 30 : 120);
       },
-      () => (showRulers = !showRulers), // Toggle rulers
+      () => (showRulers = !showRulers),
       () => {
-        // Toggle stopwatch
         showStopwatch = !showStopwatch;
         if (showStopwatch) toggleStopwatch();
       }
@@ -83,12 +75,11 @@ const sketch = (p: p5) => {
 
     createStopwatch(p);
 
+    // Initialize balls
     for (let i = 0; i < BALL_COUNT; i++) {
       balls.push({
         x: 100 + i * BALL_SPACING,
         y: FIXED_Y,
-        vy: 0,
-        ay: 0,
       });
     }
 
@@ -106,10 +97,10 @@ const sketch = (p: p5) => {
     if (showRulers) drawRulers(p, dashedLines);
     drawReferenceLine(p, balls, FIXED_Y);
 
-    // Draw balls and connecting lines
     p.stroke(37, 150, 190);
     p.fill(37, 150, 190);
 
+    // Update ball positions based on oscillation and physical effects
     balls.forEach((ball, i) => {
       if (i < balls.length - 1) {
         p.line(ball.x, ball.y, balls[i + 1].x, balls[i + 1].y);
@@ -121,19 +112,14 @@ const sketch = (p: p5) => {
       updateBalls(balls, time, p, {
         amplitude,
         frequency,
-        dampingCoefficient: damping,
-        springConstant,
+        damping,
+        tension,
         springFactor,
         dampingFactor,
       });
     }
 
-    displayMetrics(p, {
-      amplitude,
-      frequency,
-      damping,
-      tension: springConstant,
-    });
+    displayMetrics(p, { amplitude, frequency, damping, tension });
 
     if (showStopwatch) updateStopwatch(p);
   };

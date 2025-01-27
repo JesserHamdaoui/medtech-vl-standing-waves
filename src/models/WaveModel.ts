@@ -277,13 +277,6 @@ export class WaveModel {
       throw new Error("Unsupported time speed value");
     }
 
-    // Prepare for interpolation on slow FPS
-    const startingLeftY = this.yNow[0];
-    const numSteps = Math.floor(dt / fixDt);
-    const perStepDelta = numSteps
-      ? (this.nextLeftYProperty.value - startingLeftY) / numSteps
-      : 0;
-
     // Calculate tension factor for dt adjustment
     const tensionFactor = linear(
       Math.sqrt(0.2),

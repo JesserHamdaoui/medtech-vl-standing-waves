@@ -20,34 +20,7 @@ body {
 }
 
 canvas {
-  margin-left: 250px;
-}
-
-#stopwatch {
-  margin-left: 1050px;
-}
-
-#amplitude,
-#frequency,
-#damping,
-#tension {
-  margin-left: 1050px;
-}
-
-button {
-  border: none;
-  background-color: #2596be;
-  border-radius: 0.5em;
-  color: white;
-  padding: 10px 15px;
-  text-align: center;
-  text-decoration: none;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #1a6c8f;
+  /* margin-left: 250px; */
 }
 
 input {
@@ -69,37 +42,121 @@ input {
   z-index: 100;
 }
 
-/* Style the slider track */
-input[type="range"] {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 8px; /* Track height */
-  background: #fafafa; /* Track color */
-  border-radius: 5px; /* Optional: rounded corners */
-  outline: none; /* Removes the outline on focus */
-  margin-top: 10px;
+#title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #0c455a;
+  border-left: 1px solid #0c455a;
+  padding-left: 10px;
+  background-color: #d4e5f0;
 }
 
-/* Style the slider thumb (the handle) */
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 20px; /* Thumb width */
-  height: 20px; /* Thumb height */
-  background: #2596be; /* Thumb color */
-  border-radius: 50%; /* Circular thumb */
-  cursor: pointer; /* Cursor on hover */
-  transition: background-color 0.3s ease; /* Optional: smooth transition */
+.control-container {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: left;
+  padding: 0;
+  margin: 0 40px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
 }
 
-input[type="range"]::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  background: #2596be;
-  border-radius: 50%;
+.parameters-container {
+  padding: 10px 20px;
+  background-color: #f2f2f2;
+  opacity: 0.8;
+  border-radius: 0 10px 10px 0;
+  gap: 15px;
+}
+.parameters-container,
+.control-buttons-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 0 30px;
+  height: 100%;
+}
+
+.control-buttons-container {
+  background-color: #83cbe5;
+  height: 100%;
+}
+
+.sliders-container,
+.steppers-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sliders-container {
+  gap: 7.5px;
+  justify-content: left;
+  border-right: 1px solid #0c455a;
+  border-left: 1px solid #0c455a;
+  padding: 0 15px;
+}
+
+.sliders-container span {
+  text-align: left;
+}
+
+.steppers-container span {
+  text-align: left;
+}
+
+.control-buttons-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #83cbe5; /* Entire background color */
+  padding: 25px 30px; /* Adjust padding as needed */
+  position: relative; /* Position relative for absolute positioning of the start-button */
+  border-radius: 10px 0 0 10px;
+}
+
+div[data-type="start-button"],
+div[data-type="stop-button"] {
+  padding: 15px 30px; /* Size of the button */
+  background-color: #ff6f61; /* Example button color */
+  border: none;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 50px; /* Rounded button */
   cursor: pointer;
+  position: absolute; /* Positioning to extend outside */
+  top: -10px; /* Offset for top */
+  bottom: -10px; /* Offset for bottom */
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%); /* Center align correction */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add some shadow for effect */
 }
 
-/* Optional: add a hover effect for better interactivity */
-input[type="range"]::-webkit-slider-thumb:hover {
-  background: #0c455a; /* Darker color on hover */
+.control-buttons-container {
+  padding-left: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+button.toggle-button[data-type="icon"] {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  left: -25px;
+  border-radius: 50%;
+  font-size: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slider-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }

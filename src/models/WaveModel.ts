@@ -1,6 +1,5 @@
 import { Property } from "@/utils/Property";
 import { Emitter } from "@/utils/Emitter";
-import { Range } from "@/utils/Range";
 import { EndType } from "@/types/EndType";
 import { TimeSpeed } from "@/types/TimeSpeed";
 import { linear } from "@/utils/math";
@@ -17,6 +16,7 @@ export class WaveModel {
   // Properties matching reference implementation
   public readonly endTypeProperty: Property<EndType>;
   public readonly isPlayingProperty: Property<boolean>;
+  public readonly isOscillatingProperty: Property<boolean>;
   public readonly timeSpeedProperty: Property<TimeSpeed>;
 
   // Visibility properties
@@ -43,9 +43,6 @@ export class WaveModel {
   private stepDtProperty: Property<number>;
   private nextLeftYProperty: Property<number>;
 
-  // Add to properties section
-  public readonly isOscillatingProperty = new Property<boolean>(false);
-
   constructor() {
     // Initialize arrays at FIXED_Y
     this.yDraw = new Float64Array(BALL_COUNT).fill(FIXED_Y);
@@ -66,10 +63,11 @@ export class WaveModel {
 
     // Initialize other properties
     this.endTypeProperty = new Property<EndType>(EndType.FIXED_END);
-    this.isPlayingProperty = new Property(true);
+    this.isPlayingProperty = new Property(false);
+    this.isOscillatingProperty = new Property(true);
     this.timeSpeedProperty = new Property<TimeSpeed>(TimeSpeed.NORMAL);
-    this.rulersVisibleProperty = new Property(false);
-    this.referenceLineVisibleProperty = new Property(false);
+    this.rulersVisibleProperty = new Property(true);
+    this.referenceLineVisibleProperty = new Property(true);
     this.timeElapsedProperty = new Property(0);
     this.lastDtProperty = new Property(0.03);
     this.stepDtProperty = new Property(0);
@@ -156,23 +154,7 @@ export class WaveModel {
     return this.yDraw;
   }
 
-  //   reset() {
-  //     // Reset all arrays to FIXED_Y
-  //     this.ensureFixedY(this.yDraw);
-  //     this.ensureFixedY(this.yNow);
-  //     this.ensureFixedY(this.yLast);
-  //     this.ensureFixedY(this.yNext);
-
-  //     this.timeElapsedProperty.value = 0;
-  //     this.lastDtProperty.value = 0.03;
-  //     this.nextLeftYProperty.value = FIXED_Y;
-  //     this.yNowChangedEmitter.emit();
-  //   }
-
   manualRestart() {
-    // Stop oscillation
-    this.isOscillatingProperty.value = false;
-
     // Reset all properties to initial values
     this.angleProperty.value = 0;
     this.timeElapsedProperty.value = 0;

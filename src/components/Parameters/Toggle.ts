@@ -1,72 +1,63 @@
-import { CONTROL_X } from "@/constants/config";
-import { Constraint } from "matter-js";
 import p5 from "p5";
+import "./parameters.css";
 
-export const createEndModeToggle = (
-  p: p5,
-  onChange: (value: boolean) => void
-) => {
-  // Create a container for the toggle switch
-  const toggleContainer = p.createDiv("");
-  toggleContainer.position(CONTROL_X + 100, 400);
-  toggleContainer.style("display", "inline-block");
-  toggleContainer.style("cursor", "pointer");
+interface ToggleProps {
+  label: string;
+  isActive: boolean;
+  onChange: (value: boolean) => void;
+  toggleContainer?: p5.Element;
+}
 
-  // Create the toggle switch structure
-  const toggle = p.createDiv("");
-  toggle.parent(toggleContainer);
-  toggle.style(`
-    width: 50px;
-    height: 24px;
-    background-color: #ccc;
-    border-radius: 12px;
-    position: relative;
-  `);
+export class Toggle {
+  private container: p5.Element;
+  private toggle: p5.Element;
+  private knob: p5.Element;
+  private isActive: boolean;
+  private toggleContainer?: p5.Element;
 
-  // Create the sliding circle
-  const circle = p.createDiv("");
-  circle.parent(toggle);
-  circle.style(`
-    width: 22px;
-    height: 22px;
-    background-color: #fff;
-    border-radius: 50%;
-    position: absolute;
-    top: 1px;
-    left: 1px;
-    transition: left 0.2s, background-color 0.2s;
-  `);
+  constructor(p: p5, props: ToggleProps) {
+    this.toggleContainer = props.toggleContainer || p.createDiv();
+    this.isActive = props.isActive;
 
-  // Toggle logic
-  let isToggled = false;
+    // Create the container for the toggle and label
+    this.container = p.createDiv();
+    this.container.addClass("toggle-container");
 
-  toggleContainer.mousePressed(() => {
-    isToggled = !isToggled;
+    // Create the label
+    const label = p.createSpan(props.label);
+    label.addClass("toggle-label");
 
-    // Update toggle switch appearance
-    if (isToggled) {
-      toggle.style("background-color: #2596be;"); // Green when toggled
-      circle.style("left: 27px;"); // Move the circle to the right
-    } else {
-      toggle.style("background-color: #ccc;"); // Grey when off
-      circle.style("left: 1px;"); // Move the circle to the left
+    // Create the toggle switch
+    this.toggle = p.createDiv("");
+    this.toggle.addClass("toggle-switch");
+    if (this.isActive) {
+      this.toggle.addClass("active"); // Add "active" class if the toggle is on
     }
+    this.toggle.mousePressed(() => this.handleToggle(props));
 
-    // Callback to inform state change
-    onChange(isToggled);
-  });
+    // Create the knob inside the toggle switch
+    this.knob = p.createDiv("");
+    this.knob.addClass("toggle-knob");
+    this.toggle.child(this.knob);
 
-  const label = p.createDiv("End Mode Loose");
-  label.style("width", "100px");
-  label.position(CONTROL_X, 400);
+    // Append label and toggle to the container
+    this.container.child(label);
+    this.container.child(this.toggle);
 
-  const container = p.createDiv();
-  container.style("display", "flex");
-  container.style("align-items", "center");
-  container.style("gap", "10px");
+    // Add the container to the body
+    if (this.toggleContainer) {
+      this.toggleContainer.child(this.container);
+    }
+  }
 
-  container.child(label);
-  container.child(toggleContainer);
-
-  return container;
-};
+  // Method to handle toggling state
+  private handleToggle(props: ToggleProps): void {
+    this.isActive = !this.isActive;
+    if (this.isActive) {
+      this.toggle.addClass("active");
+    } else {
+      this.toggle.removeClass("active");
+    }
+    props.onChange(this.isActive); // Update external state
+  }
+}

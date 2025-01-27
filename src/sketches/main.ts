@@ -1,10 +1,7 @@
 import p5 from "p5";
 import { WaveModel } from "@/models/WaveModel";
-import { createControls } from "@/components/Parameters";
-import { createButtons } from "@/components/Buttons";
-import { drawRulers } from "@/components/Rulers";
-import { drawReferenceLine } from "@/components/ReferenceLine";
-import { displayMetrics } from "@/components/Metrics";
+import { ReferenceLine } from "@/components/ReferenceLine";
+import { drawRulers, handleRulerInteractions } from "@/components/Rulers";
 import {
   FIXED_Y,
   BALL_RADIUS,
@@ -12,40 +9,75 @@ import {
   BALL_SPACING,
 } from "@/constants/config";
 import { TimeSpeed } from "@/types/TimeSpeed";
+import { initControlButtons, initParameters } from "@/utils/helpers";
 
+// DOM setup for title and logo
+const img = document.createElement("img");
+img.src = "@/../assets/medtech-logo.png";
+img.style.width = "100px";
+
+const title = document.createElement("h1");
+title.setAttribute("id", "title");
+title.innerHTML = "Standing Wave";
+
+const titleContainer = document.createElement("div");
+titleContainer.appendChild(img);
+titleContainer.appendChild(title);
+
+titleContainer.style.position = "absolute";
+titleContainer.style.top = "10px";
+titleContainer.style.left = "10px";
+titleContainer.style.display = "flex";
+titleContainer.style.alignItems = "center";
+titleContainer.style.gap = "10px";
+
+document.body.appendChild(titleContainer);
+
+// Main sketch
 const sketch = (p: p5) => {
   let model: WaveModel;
   let balls: { x: number; y: number }[] = [];
+  let referenceLines: ReferenceLine[] = [];
+  let interactionHandler: ReturnType<typeof handleRulerInteractions>;
 
   p.setup = () => {
-    p.createCanvas(800, 400);
+    p.createCanvas(1000, 400);
     p.frameRate(120);
 
-    // Initialize model
     model = new WaveModel();
 
-    // Initialize balls positions at FIXED_Y
+    // Initialize balls positions
     balls = Array.from({ length: BALL_COUNT }, (_, i) => ({
       x: 100 + i * BALL_SPACING,
       y: FIXED_Y,
     }));
 
-    // Create UI controls
-    createControls(
+    // Initialize ruler interactions
+    interactionHandler = handleRulerInteractions(
       p,
-      (value) => (model.amplitudeProperty.value = value),
-      (value) => (model.frequencyProperty.value = value),
-      (value) => (model.tensionProperty.value = value),
-      (value) => (model.dampingProperty.value = value),
-      () => model.toggleEndMode()
+      referenceLines,
+      (newLines) => {
+        referenceLines = newLines;
+      }
     );
 
-    createButtons(
-      p,
-      () => (model.isOscillatingProperty.value = true),
-      () => model.manualRestart(),
-      () => (model.isPlayingProperty.value = !model.isPlayingProperty.value),
-      () => {
+    // Create UI controls
+    const controlContainer = p.createDiv();
+    controlContainer.addClass("control-container");
+
+    initParameters(p, {
+      onAmplitudeChange: (value) => (model.amplitudeProperty.value = value),
+      onFrequencyChange: (value) => (model.frequencyProperty.value = value),
+      onTensionChange: (value) => (model.tensionProperty.value = value),
+      onDampingChange: (value) => (model.dampingProperty.value = value),
+      onEndModeChange: () => model.toggleEndMode(),
+    });
+
+    initControlButtons(p, {
+      onPause: () =>
+        (model.isPlayingProperty.value = !model.isPlayingProperty.value),
+      onRestart: () => model.manualRestart(),
+      onSlow: () => {
         model.timeSpeedProperty.value =
           model.timeSpeedProperty.value === TimeSpeed.NORMAL
             ? TimeSpeed.SLOW
@@ -54,64 +86,41 @@ const sketch = (p: p5) => {
           model.timeSpeedProperty.value === TimeSpeed.SLOW ? 30 : 120
         );
       },
-      () =>
-        (model.rulersVisibleProperty.value =
-          !model.rulersVisibleProperty.value),
-      () =>
-        (model.referenceLineVisibleProperty.value =
-          !model.referenceLineVisibleProperty.value)
-    );
+    });
 
     // Listen for model updates
     model.yNowChangedEmitter.addListener(() => {
-      // Get positions from model and update ball positions
       const positions = model.getPositions();
-      for (let i = 0; i < balls.length; i++) {
-        // Positions from model are already relative to FIXED_Y
-        balls[i].y = positions[i];
-      }
+      balls.forEach((ball, i) => {
+        ball.y = positions[i];
+      });
     });
   };
 
   p.draw = () => {
     const dt = p.deltaTime / 1000;
-
-    // Update model
     model.step(dt);
-
-    // Draw
     p.background(212, 229, 240);
 
-    // Draw reference line at FIXED_Y
-    if (model.referenceLineVisibleProperty.value) {
-      drawReferenceLine(p, balls, FIXED_Y);
-    }
+    // Draw reference line
+    // if (model.referenceLineVisibleProperty.value) {
+    //   drawReferenceLine(p, FIXED_Y);
+    // }
 
-    // Draw rulers if visible
+    // Draw rulers with active line
     if (model.rulersVisibleProperty.value) {
-      drawRulers(p, []);
+      drawRulers(p, referenceLines, interactionHandler.getActiveLine());
     }
 
-    // Draw string
+    // Draw wave
     p.stroke(37, 150, 190);
     p.fill(37, 150, 190);
 
-    // Draw balls and connecting lines
     balls.forEach((ball, i) => {
-      // Draw line to next ball
       if (i < balls.length - 1) {
         p.line(ball.x, ball.y, balls[i + 1].x, balls[i + 1].y);
       }
-      // Draw ball
       p.ellipse(ball.x, ball.y, BALL_RADIUS);
-    });
-
-    // Display metrics
-    displayMetrics(p, {
-      amplitude: model.amplitudeProperty.value,
-      frequency: model.frequencyProperty.value,
-      damping: model.dampingProperty.value,
-      tension: model.tensionProperty.value,
     });
   };
 };

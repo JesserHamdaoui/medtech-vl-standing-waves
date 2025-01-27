@@ -48,7 +48,7 @@ input {
   color: #0c455a;
   border-left: 1px solid #0c455a;
   padding-left: 10px;
-  background-color: #d4e5f0;
+  /* background-color: #d4e5f0; */
 }
 
 .control-container {

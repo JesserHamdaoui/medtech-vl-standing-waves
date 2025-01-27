@@ -16,23 +16,65 @@ import { Stopwatch } from "@/components/Stopwatch";
 const img = document.createElement("img");
 img.src = "@/../assets/medtech-logo.png";
 img.style.width = "100px";
+img.style.opacity = "0"; // Start with invisible logo
 
 const title = document.createElement("h1");
 title.setAttribute("id", "title");
 title.innerHTML = "Standing Wave";
+title.style.opacity = "0"; // Start with invisible title
 
 const titleContainer = document.createElement("div");
 titleContainer.appendChild(img);
 titleContainer.appendChild(title);
 
 titleContainer.style.position = "absolute";
-titleContainer.style.top = "10px";
-titleContainer.style.left = "10px";
+titleContainer.style.zIndex = "10000";
+titleContainer.style.top = "200px"; // Start in the center
+titleContainer.style.left = "500px";
+titleContainer.style.transform = "translate(-50%, -50%)";
 titleContainer.style.display = "flex";
 titleContainer.style.alignItems = "center";
 titleContainer.style.gap = "10px";
+titleContainer.style.transition = "all 1.5s ease, opacity 1.5s ease";
 
 document.body.appendChild(titleContainer);
+
+// White background overlay
+const overlay = document.createElement("div");
+overlay.style.position = "fixed";
+overlay.style.top = "0";
+overlay.style.left = "0";
+overlay.style.width = "100%";
+overlay.style.height = "100%";
+overlay.style.backgroundColor = "white";
+overlay.style.zIndex = "9999";
+overlay.style.transition = "opacity 1.5s ease";
+document.body.appendChild(overlay);
+
+// Animation function
+const animateLogo = () => {
+  // Fade in logo and title
+  setTimeout(() => {
+    img.style.opacity = "1";
+    title.style.opacity = "1";
+  }, 500);
+
+  // Move to final position and fade out overlay
+  setTimeout(() => {
+    titleContainer.style.top = "10px";
+    titleContainer.style.left = "10px";
+    titleContainer.style.transform = "translate(0, 0)";
+    overlay.style.opacity = "0";
+  }, 1500);
+
+  // Remove overlay after animation
+  setTimeout(() => {
+    document.body.removeChild(overlay);
+  }, 3000);
+};
+
+// Start animation on page load
+window.onload = animateLogo;
 
 // Main sketch
 const sketch = (p: p5) => {

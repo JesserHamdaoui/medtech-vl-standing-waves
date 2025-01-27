@@ -10,6 +10,7 @@ import {
 } from "@/constants/config";
 import { TimeSpeed } from "@/types/TimeSpeed";
 import { initControlButtons, initParameters } from "@/utils/helpers";
+import { Stopwatch } from "@/components/Stopwatch";
 
 // DOM setup for title and logo
 const img = document.createElement("img");
@@ -39,6 +40,7 @@ const sketch = (p: p5) => {
   let balls: { x: number; y: number }[] = [];
   let referenceLines: ReferenceLine[] = [];
   let interactionHandler: ReturnType<typeof handleRulerInteractions>;
+  let stopwatch: Stopwatch;
 
   p.setup = () => {
     p.createCanvas(1000, 400);
@@ -61,6 +63,8 @@ const sketch = (p: p5) => {
       }
     );
 
+    stopwatch = new Stopwatch();
+
     // Create UI controls
     const controlContainer = p.createDiv();
     controlContainer.addClass("control-container");
@@ -74,8 +78,10 @@ const sketch = (p: p5) => {
     });
 
     initControlButtons(p, {
-      onPause: () =>
-        (model.isPlayingProperty.value = !model.isPlayingProperty.value),
+      onPause: () => {
+        stopwatch.setPaused(model.isPlayingProperty.value);
+        model.isPlayingProperty.value = !model.isPlayingProperty.value;
+      },
       onRestart: () => model.manualRestart(),
       onSlow: () => {
         model.timeSpeedProperty.value =
@@ -101,6 +107,8 @@ const sketch = (p: p5) => {
     const dt = p.deltaTime / 1000;
     model.step(dt);
     p.background(212, 229, 240);
+
+    stopwatch.update(p.deltaTime, model.timeSpeedProperty.value);
 
     // Draw reference line
     if (model.referenceLineVisibleProperty.value) {

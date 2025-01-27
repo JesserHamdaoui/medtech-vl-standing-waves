@@ -155,8 +155,80 @@ button.toggle-button[data-type="icon"] {
   justify-content: center;
 }
 
+button.toggle-button[data-label="Slower"],
+button.toggle-button[data-label="Faster"] {
+  min-width: 80px;
+}
+
 .slider-container {
   display: flex;
   flex-direction: row;
   justify-content: center;
+}
+#stopwatch {
+  background: #f2f2f2;
+  border-radius: 8px;
+  padding: 12px 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  min-width: 160px;
+  transform: scale(0.9);
+  transform-origin: top left;
+  font-family: "Poppins", sans-serif;
+  user-select: none;
+  border: 1px solid #0c455a;
+  opacity: 0.9;
+  z-index: 1000;
+}
+
+#stopwatch > div:first-child {
+  font-size: 0.8em;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  color: #0c455a;
+  font-weight: 600;
+  border-bottom: 1px solid #83cbe5;
+}
+
+#stopwatch > p {
+  font-size: 1.5em;
+  margin: 0 0 12px 0;
+  padding: 8px;
+  text-align: center;
+  color: #0c455a;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #83cbe5;
+  font-family: "Courier New", monospace;
+}
+
+#stopwatch button {
+  padding: 6px 12px;
+  min-width: 32px;
+  border-radius: 6px;
+  font-size: 0.8em;
+  background: #83cbe5;
+  color: #0c455a;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  margin: 0 4px;
+}
+
+#stopwatch button:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#stopwatch button:active {
+  transform: scale(0.98);
+}
+
+#stopwatch.dragging {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0.95;
+  cursor: move;
+}
+
+.fas {
+  pointer-events: none;
 }

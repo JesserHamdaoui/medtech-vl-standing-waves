@@ -34,7 +34,7 @@ export const drawRulers = (
     const distCm = (x - REFERENCE_X) / PX_PER_CM;
     p.push();
     p.noStroke();
-    p.text(`${distCm.toFixed(1)}`, x + 5, horizontalRulerY - 15);
+    p.text(`${distCm.toFixed(2)}`, x + 5, horizontalRulerY - 15);
     p.pop();
   }
 
@@ -45,20 +45,58 @@ export const drawRulers = (
     const distCm = (REFERENCE_Y - y) / PX_PER_CM;
     p.push();
     p.noStroke();
-    p.text(`${distCm.toFixed(1)}`, verticalRulerX - 40, y + 5);
+    p.text(`${distCm.toFixed(2)}`, verticalRulerX - 40, y + 5);
     p.pop();
   }
 
-  // Draw reference lines
-  p.push();
-  referenceLines.forEach((line) => ReferenceLineUtils.drawLine(p, line));
-  if (activeLine) ReferenceLineUtils.drawLine(p, activeLine, true);
-  p.pop();
+  // Draw reference lines with measurements
+  referenceLines.forEach((line) => {
+    ReferenceLineUtils.drawLine(p, line);
+
+    // Vertical line measurement (centered below)
+    if (line.x !== undefined) {
+      const cmX = ((line.x - REFERENCE_X) / PX_PER_CM).toFixed(2);
+      p.push();
+      p.fill(0);
+      p.textAlign(p.CENTER, p.TOP);
+      p.text(`${cmX} cm`, line.x, horizontalRulerY + 15);
+      p.pop();
+    }
+
+    // Horizontal line measurement (right side)
+    if (line.y !== undefined) {
+      const cmY = ((REFERENCE_Y - line.y) / PX_PER_CM).toFixed(2);
+      p.push();
+      p.fill(0);
+      p.textAlign(p.RIGHT, p.CENTER);
+      p.text(`${cmY} cm`, p.width - 20, line.y); // Right-aligned at canvas edge
+      p.pop();
+    }
+  });
+
+  // Draw active line (if any)
+  if (activeLine) {
+    ReferenceLineUtils.drawLine(p, activeLine, true);
+
+    // Draw temporary measurement during drag
+    if (activeLine.x !== undefined) {
+      const cmX = ((activeLine.x - REFERENCE_X) / PX_PER_CM).toFixed(2);
+      p.fill(255, 0, 0);
+      p.textAlign(p.CENTER, p.TOP);
+      p.text(`${cmX} cm`, activeLine.x, horizontalRulerY + 15);
+    }
+    if (activeLine.y !== undefined) {
+      const cmY = ((REFERENCE_Y - activeLine.y) / PX_PER_CM).toFixed(2);
+      p.fill(255, 0, 0);
+      p.textAlign(p.RIGHT, p.CENTER);
+      p.text(`${cmY} cm`, p.width - 20, activeLine.y); // Right side measurement
+    }
+  }
 };
 
 export const handleRulerInteractions = (
   p: p5,
-  referenceLines: ReferenceLine[],
+  getReferenceLines: () => ReferenceLine[], // Getter function for current state
   setReferenceLines: (lines: ReferenceLine[]) => void
 ) => {
   const horizontalRulerY = REFERENCE_Y + 150;
@@ -68,12 +106,13 @@ export const handleRulerInteractions = (
   let lastClickTime = 0;
 
   p.mousePressed = () => {
+    const referenceLines = getReferenceLines(); // Get fresh state
     const now = Date.now();
 
     // Handle double-click deletion
     if (DoubleClickProcessor.check(now, lastClickTime)) {
       setReferenceLines(
-        DoubleClickProcessor.process(referenceLines, p.mouseX, p.mouseY)
+        DoubleClickProcessor.process(p, referenceLines, p.mouseX, p.mouseY)
       );
       lastClickTime = now;
       return;
@@ -86,7 +125,6 @@ export const handleRulerInteractions = (
     );
 
     if (clickedLine) {
-      // Start dragging existing line
       activeLine = { ...clickedLine, isDragging: true };
       setReferenceLines(referenceLines.filter((l) => l !== clickedLine));
       return;
@@ -106,18 +144,19 @@ export const handleRulerInteractions = (
 
   p.mouseDragged = () => {
     if (activeLine?.isDragging) {
-      activeLine = ReferenceLineUtils.handleLineMovement(
-        activeLine,
-        p.mouseX,
-        p.mouseY
-      );
+      // Allow free positioning (no grid snapping)
+      if (activeLine.x !== undefined) {
+        activeLine.x = p.mouseX;
+      } else if (activeLine.y !== undefined) {
+        activeLine.y = p.mouseY;
+      }
     }
   };
 
   p.mouseReleased = () => {
     if (activeLine?.isDragging) {
       activeLine.isDragging = false;
-      setReferenceLines([...referenceLines, activeLine]);
+      setReferenceLines([...getReferenceLines(), activeLine]);
       activeLine = null;
     }
   };

@@ -1,6 +1,6 @@
 import p5 from "p5";
 import { WaveModel } from "@/models/WaveModel";
-import { ReferenceLine } from "@/components/ReferenceLine";
+import { DASH_PATTERN, ReferenceLine } from "@/components/ReferenceLine";
 import { drawRulers, handleRulerInteractions } from "@/components/Rulers";
 import {
   FIXED_Y,
@@ -52,12 +52,12 @@ const sketch = (p: p5) => {
       y: FIXED_Y,
     }));
 
-    // Initialize ruler interactions
+    // Initialize ruler interactions with getter function
     interactionHandler = handleRulerInteractions(
       p,
-      referenceLines,
+      () => referenceLines, // Getter function for current state
       (newLines) => {
-        referenceLines = newLines;
+        referenceLines = newLines; // Setter function to update state
       }
     );
 
@@ -103,9 +103,13 @@ const sketch = (p: p5) => {
     p.background(212, 229, 240);
 
     // Draw reference line
-    // if (model.referenceLineVisibleProperty.value) {
-    //   drawReferenceLine(p, FIXED_Y);
-    // }
+    if (model.referenceLineVisibleProperty.value) {
+      p.stroke(150);
+      p.strokeWeight(1);
+      p.drawingContext.setLineDash(DASH_PATTERN);
+      p.line(70, FIXED_Y, p.width, FIXED_Y);
+      p.drawingContext.setLineDash([]);
+    }
 
     // Draw rulers with active line
     if (model.rulersVisibleProperty.value) {

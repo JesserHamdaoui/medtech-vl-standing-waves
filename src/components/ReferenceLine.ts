@@ -1,4 +1,3 @@
-// referenceLine.ts
 import p5 from "p5";
 
 // Constants
@@ -73,20 +72,21 @@ export const ReferenceLineUtils = {
 // Double-click handler type
 export type DoubleClickHandler = {
   check: (currentTime: number, lastClickTime: number) => boolean;
-  process: (lines: ReferenceLine[], mx: number, my: number) => ReferenceLine[];
+  process: (
+    p: p5,
+    lines: ReferenceLine[],
+    mx: number,
+    my: number
+  ) => ReferenceLine[];
 };
 
 export const DoubleClickProcessor: DoubleClickHandler = {
   check: (currentTime, lastClickTime) =>
     currentTime - lastClickTime < DOUBLE_CLICK_DELAY,
 
-  process: (lines, mx, my) => {
+  process: (p, lines, mx, my) => {
     return lines.filter(
-      (line) =>
-        line.x !== undefined &&
-        Math.abs(mx - line.x) > LINE_PROXIMITY_THRESHOLD &&
-        line.y !== undefined &&
-        Math.abs(my - line.y) > LINE_PROXIMITY_THRESHOLD
+      (line) => !ReferenceLineUtils.isPointNearLine(p, line, mx, my)
     );
   },
 };

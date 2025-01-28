@@ -46,7 +46,7 @@ overlay.style.top = "0";
 overlay.style.left = "0";
 overlay.style.width = "100%";
 overlay.style.height = "100%";
-overlay.style.backgroundColor = "white";
+overlay.style.backgroundColor = "rgb(230,236,238)";
 overlay.style.zIndex = "9999";
 overlay.style.transition = "opacity 1.5s ease";
 document.body.appendChild(overlay);
@@ -85,7 +85,7 @@ const sketch = (p: p5) => {
   let stopwatch: Stopwatch;
 
   p.setup = () => {
-    p.createCanvas(1000, 400);
+    p.createCanvas(1120, 400);
     p.frameRate(120);
 
     model = new WaveModel();
@@ -148,7 +148,7 @@ const sketch = (p: p5) => {
   p.draw = () => {
     const dt = p.deltaTime / 1000;
     model.step(dt);
-    p.background(212, 229, 240);
+    p.background(230, 236, 238);
 
     stopwatch.update(p.deltaTime, model.timeSpeedProperty.value);
 
@@ -167,14 +167,20 @@ const sketch = (p: p5) => {
     }
 
     // Draw wave
-    p.stroke(37, 150, 190);
-    p.fill(37, 150, 190);
+    p.stroke(12, 69, 90);
+    p.fill(12, 69, 90);
 
     balls.forEach((ball, i) => {
       if (i < balls.length - 1) {
         p.line(ball.x, ball.y, balls[i + 1].x, balls[i + 1].y);
       }
+      if (i % 10 === 0) {
+        p.fill(190, 77, 37);
+        p.stroke(190, 77, 37);
+      }
       p.ellipse(ball.x, ball.y, BALL_RADIUS);
+      p.fill(12, 69, 90);
+      p.stroke(12, 69, 90);
     });
   };
 };

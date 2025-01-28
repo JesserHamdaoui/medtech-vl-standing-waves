@@ -33,7 +33,7 @@ export class Stepper {
 
     this.valueInput = p.createInput(this.currentValue.toString(), "text");
     this.valueInput.addClass("stepper-input");
-    this.valueInput.input(() => this.handleInputChange(props));
+    (this.valueInput as any).input(() => this.handleInputChange(props));
 
     const plusButton = p.createButton("<i class='fas fa-plus'></i>");
     plusButton.addClass("stepper-button");

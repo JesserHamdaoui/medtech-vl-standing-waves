@@ -30,7 +30,7 @@ export class Slider {
       props.step
     );
     slider.addClass("slider-input");
-    slider.input(() => props.onChange(slider.value() as number));
+    (slider as any).input(() => props.onChange(slider.value() as number));
 
     this.container.child(label);
     this.container.child(slider);

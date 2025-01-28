@@ -23,6 +23,7 @@ export const ReferenceLineUtils = {
     mx: number,
     my: number
   ): boolean => {
+    if (!p) return false;
     if (line.x !== undefined) {
       return Math.abs(mx - line.x) < LINE_PROXIMITY_THRESHOLD;
     }

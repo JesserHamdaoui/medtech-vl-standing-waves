@@ -37,7 +37,10 @@ export class Property<T> {
     if (typeof this._value === "number") {
       const numValue = this._value as number;
       if (numValue < range.min || numValue > range.max) {
-        this.value = Math.min(Math.max(numValue, range.min), range.max);
+        (this.value as any) = Math.min(
+          Math.max(numValue, range.min),
+          range.max
+        );
       }
     }
   }

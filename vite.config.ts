@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   root: ".",
-  base: "/",
+  base: "/medtech-vl-standing-waves/",
   build: {
     outDir: "dist",
     emptyOutDir: true,

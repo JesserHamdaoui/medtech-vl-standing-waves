@@ -29,8 +29,8 @@ titleContainer.appendChild(title);
 
 titleContainer.style.position = "absolute";
 titleContainer.style.zIndex = "10000";
-titleContainer.style.top = "200px"; // Start in the center
-titleContainer.style.left = "500px";
+titleContainer.style.top = "275px"; // Start in the center
+titleContainer.style.left = "575px";
 titleContainer.style.transform = "translate(-50%, -50%)";
 titleContainer.style.display = "flex";
 titleContainer.style.alignItems = "center";

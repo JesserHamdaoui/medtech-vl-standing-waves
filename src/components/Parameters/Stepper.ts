@@ -16,6 +16,7 @@ export class Stepper {
   private valueInput: p5.Element;
   private currentValue: number;
   private stepperContainer: p5.Element;
+  private intervalId: NodeJS.Timeout | null = null;
 
   constructor(p: p5, props: StepperProps) {
     this.currentValue = this.roundToPrecision(props.initialValue, 2);
@@ -29,15 +30,17 @@ export class Stepper {
 
     const minusButton = p.createButton("<i class='fas fa-minus'></i>");
     minusButton.addClass("stepper-button");
-    minusButton.mousePressed(() => this.updateValue(props, -props.step));
+
+    const plusButton = p.createButton("<i class='fas fa-plus'></i>");
+    plusButton.addClass("stepper-button");
+
+    // Button events with press-and-hold functionality
+    this.addHoldEvent(minusButton, () => this.updateValue(props, -props.step));
+    this.addHoldEvent(plusButton, () => this.updateValue(props, props.step));
 
     this.valueInput = p.createInput(this.currentValue.toString(), "text");
     this.valueInput.addClass("stepper-input");
     (this.valueInput as any).input(() => this.handleInputChange(props));
-
-    const plusButton = p.createButton("<i class='fas fa-plus'></i>");
-    plusButton.addClass("stepper-button");
-    plusButton.mousePressed(() => this.updateValue(props, props.step));
 
     this.container.child(label);
     this.container.child(minusButton);
@@ -49,8 +52,37 @@ export class Stepper {
     }
   }
 
+  private addHoldEvent(button: p5.Element, action: () => void): void {
+    let isHeld = false;
+    let delay = 500; // Initial delay before holding
+    let interval = 100; // Speed of repeated execution
+
+    const startHolding = () => {
+      if (!isHeld) {
+        isHeld = true;
+        action(); // Perform action immediately
+        this.intervalId = setTimeout(() => {
+          this.intervalId = setInterval(action, interval);
+        }, delay);
+      }
+    };
+
+    const stopHolding = () => {
+      isHeld = false;
+      if (this.intervalId) {
+        clearTimeout(this.intervalId);
+        clearInterval(this.intervalId);
+        this.intervalId = null;
+      }
+    };
+
+    button.mousePressed(startHolding);
+    button.mouseReleased(stopHolding);
+    button.mouseOut(stopHolding); // Ensures stopping if the mouse leaves the button
+  }
+
   private updateValue(props: StepperProps, delta: number): void {
-    const newValue = this.roundToPrecision(this.currentValue + delta, 2);
+    const newValue = this.roundToPrecision(this.currentValue + delta, 3);
     if (newValue >= props.min && newValue <= props.max) {
       this.currentValue = newValue;
       this.valueInput.value(this.currentValue.toString());
@@ -61,7 +93,7 @@ export class Stepper {
   private handleInputChange(props: StepperProps): void {
     const inputValue = parseFloat(this.valueInput.value() as string);
     if (!isNaN(inputValue)) {
-      const roundedValue = this.roundToPrecision(inputValue, 2);
+      const roundedValue = this.roundToPrecision(inputValue, 3);
       if (roundedValue >= props.min && roundedValue <= props.max) {
         this.currentValue = roundedValue;
         this.valueInput.value(this.currentValue.toString());

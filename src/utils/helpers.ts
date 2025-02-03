@@ -134,7 +134,7 @@ export const initParameters = (p: p5, props: ParametersProps) => {
     label: "Frequency",
     min: 0,
     max: 3.0,
-    step: 0.01,
+    step: 0.001,
     initialValue: 1.5,
     onChange: props.onFrequencyChange,
     stepperContainer: stepperContainer,

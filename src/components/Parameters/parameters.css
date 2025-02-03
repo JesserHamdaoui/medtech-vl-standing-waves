@@ -6,7 +6,7 @@
 }
 
 .slider-label {
-  width: 100px;
+  width: 80px;
   text-align: right;
 }
 
@@ -18,7 +18,7 @@
 /* Style the slider track */
 input[type="range"] {
   -webkit-appearance: none;
-  width: 100%;
+  width: 100px;
   height: 8px; /* Track height */
   background: #fafafa; /* Track color */
   border-radius: 5px; /* Optional: rounded corners */
@@ -49,6 +49,11 @@ input[type="range"]::-moz-range-thumb {
 /* Optional: add a hover effect for better interactivity */
 input[type="range"]::-webkit-slider-thumb:hover {
   background: #0c455a; /* Darker color on hover */
+}
+
+.indicator {
+  font-size: 12px;
+  color: #0c455a;
 }
 
 /* Stepper styles */

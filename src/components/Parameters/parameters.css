@@ -93,67 +93,27 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .toggle-label {
-  font-size: 16px;
+  font-size: 12px;
   color: #000;
 }
 
+/* Toggle switch */
 .toggle-switch {
-  width: 50px;
-  height: 24px;
-  background-color: #ccc;
-  border-radius: 12px;
-  position: relative;
-  cursor: pointer;
-}
-
-.toggle-switch.active {
-  background-color: #2596be;
-}
-
-.toggle-knob {
-  width: 20px;
-  height: 20px;
-  background-color: #fff;
-  border-radius: 50%;
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  transition: left 0.2s;
-}
-
-.toggle-switch.active .toggle-knob {
-  left: 26px;
-}
-
-/* General container styling */
-.toggle-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* Label styling */
-.toggle-label {
-  font-size: 16px;
-  color: #000;
-}
-
-/* Basic toggle switch styling */
-.toggle-switch {
-  width: 50px;
+  min-width: 50px;
   height: 24px;
   background-color: #ccc;
   border-radius: 12px;
   position: relative;
   cursor: pointer;
   display: inline-block;
+  transition: background-color 0.2s ease-in-out;
 }
 
 .toggle-switch.active {
   background-color: #2596be;
 }
 
-/* Knob inside the toggle switch */
+/* Toggle knob */
 .toggle-knob {
   width: 20px;
   height: 20px;

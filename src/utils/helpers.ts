@@ -142,7 +142,7 @@ export const initParameters = (p: p5, props: ParametersProps) => {
 
   new Toggle(p, {
     isActive: true,
-    label: "Fix the end",
+    label: "Fixed end",
     onChange: props.onEndModeChange,
     toggleContainer: parameters,
   });

@@ -22,7 +22,7 @@ export class Stopwatch {
     this.stopwatchDiv = document.createElement("div");
     this.stopwatchDiv.id = "stopwatch";
     this.stopwatchDiv.style.position = "absolute";
-    this.stopwatchDiv.style.top = "20px";
+    this.stopwatchDiv.style.top = "70px";
     this.stopwatchDiv.style.left = "1180px";
     this.stopwatchDiv.style.cursor = "move";
 

@@ -8,6 +8,7 @@ import {
   BALL_COUNT,
   BALL_SPACING,
 } from "@/constants/config";
+import { EndType } from "@/types/EndType";
 import { TimeSpeed } from "@/types/TimeSpeed";
 import { initControlButtons, initParameters } from "@/utils/helpers";
 import { Stopwatch } from "@/components/Stopwatch";
@@ -83,6 +84,11 @@ const sketch = (p: p5) => {
   let referenceLines: ReferenceLine[] = [];
   let interactionHandler: ReturnType<typeof handleRulerInteractions>;
   let stopwatch: Stopwatch;
+  let clampImg: p5.Image; // Declare clamp image
+
+  p.preload = () => {
+    clampImg = p.loadImage("@/../assets/clamp.png"); // Ensure the path is correct
+  };
 
   p.setup = () => {
     p.createCanvas(1120, 400);
@@ -182,6 +188,12 @@ const sketch = (p: p5) => {
       p.fill(12, 69, 90);
       p.stroke(12, 69, 90);
     });
+
+    // Draw clamp on the last ball
+    if (model.endTypeProperty.value === EndType.FIXED_END) {
+      let lastBall = balls[balls.length - 1];
+      p.image(clampImg, lastBall.x - 16, lastBall.y - 26.5, 70, 120); // Adjust position and size
+    }
   };
 };
 

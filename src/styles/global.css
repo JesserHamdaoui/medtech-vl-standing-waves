@@ -20,6 +20,10 @@ body {
   height: 100vh;
 }
 
+main {
+  position: relative;
+}
+
 input {
   border: none;
   background-color: #f2f2f2;

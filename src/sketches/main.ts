@@ -61,7 +61,7 @@ const animateLogo = () => {
 
   // Move to final position and fade out overlay
   setTimeout(() => {
-    titleContainer.style.top = "70px";
+    titleContainer.style.top = "170px";
     titleContainer.style.left = "240px";
     titleContainer.style.transform = "translate(0, 0)";
     overlay.style.opacity = "0";

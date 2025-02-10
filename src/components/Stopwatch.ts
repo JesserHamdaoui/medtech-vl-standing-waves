@@ -23,7 +23,7 @@ export class Stopwatch {
     this.stopwatchDiv.id = "stopwatch";
     this.stopwatchDiv.style.position = "absolute";
     this.stopwatchDiv.style.top = "20px";
-    this.stopwatchDiv.style.left = "980px";
+    this.stopwatchDiv.style.left = "1180px";
     this.stopwatchDiv.style.cursor = "move";
 
     // Create label

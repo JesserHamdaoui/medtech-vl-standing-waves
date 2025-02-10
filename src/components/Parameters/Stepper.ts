@@ -19,7 +19,7 @@ export class Stepper {
   private intervalId: NodeJS.Timeout | null = null;
 
   constructor(p: p5, props: StepperProps) {
-    this.currentValue = this.roundToPrecision(props.initialValue, 2);
+    this.currentValue = this.roundToPrecision(props.initialValue, 3);
 
     this.stepperContainer = props.stepperContainer || p.createDiv();
     this.container = p.createDiv();
@@ -40,7 +40,32 @@ export class Stepper {
 
     this.valueInput = p.createInput(this.currentValue.toString(), "text");
     this.valueInput.addClass("stepper-input");
+
+    // Input event handling
     (this.valueInput as any).input(() => this.handleInputChange(props));
+    (this.valueInput as any).attribute("pattern", "[0-9]*[.]?[0-9]*");
+    (this.valueInput as any).attribute("inputmode", "decimal");
+
+    // Auto-select all text when focused
+    this.valueInput.mousePressed((event: MouseEvent) => {
+      event.preventDefault(); // Prevent default behavior that causes deselection
+      this.valueInput.elt.select();
+    });
+    this.valueInput.elt.addEventListener("focus", () =>
+      this.valueInput.elt.select()
+    );
+
+    // Pressing "Enter" blurs the input
+    this.valueInput.elt.addEventListener("keydown", (event: KeyboardEvent) => {
+      if (event.key === "Enter") {
+        this.valueInput.elt.blur();
+      }
+    });
+
+    // Enforce bounds when losing focus
+    this.valueInput.elt.addEventListener("blur", () =>
+      this.enforceBounds(props)
+    );
 
     this.container.child(label);
     this.container.child(minusButton);
@@ -91,15 +116,31 @@ export class Stepper {
   }
 
   private handleInputChange(props: StepperProps): void {
-    const inputValue = parseFloat(this.valueInput.value() as string);
-    if (!isNaN(inputValue)) {
-      const roundedValue = this.roundToPrecision(inputValue, 3);
-      if (roundedValue >= props.min && roundedValue <= props.max) {
-        this.currentValue = roundedValue;
-        this.valueInput.value(this.currentValue.toString());
-        props.onChange(this.currentValue);
-      }
+    const inputValue = (this.valueInput.value() as string).trim();
+
+    if (inputValue === "") return; // Ignore empty input
+
+    const parsedValue = parseFloat(inputValue);
+    if (!isNaN(parsedValue)) {
+      this.currentValue = this.roundToPrecision(parsedValue, 3);
+      props.onChange(this.currentValue);
     }
+  }
+
+  private enforceBounds(props: StepperProps): void {
+    let inputValue = parseFloat(this.valueInput.value() as string);
+
+    if (isNaN(inputValue)) {
+      this.valueInput.value(this.currentValue.toString()); // Revert to last valid value
+      return;
+    }
+
+    if (inputValue < props.min) inputValue = props.min;
+    if (inputValue > props.max) inputValue = props.max;
+
+    this.currentValue = this.roundToPrecision(inputValue, 3);
+    this.valueInput.value(this.currentValue.toString());
+    props.onChange(this.currentValue);
   }
 
   private roundToPrecision(value: number, precision: number): number {

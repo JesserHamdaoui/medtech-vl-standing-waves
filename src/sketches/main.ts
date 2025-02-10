@@ -29,8 +29,8 @@ titleContainer.appendChild(title);
 
 titleContainer.style.position = "absolute";
 titleContainer.style.zIndex = "10000";
-titleContainer.style.top = "275px"; // Start in the center
-titleContainer.style.left = "575px";
+titleContainer.style.top = "50%"; // Start in the center
+titleContainer.style.left = "50%";
 titleContainer.style.transform = "translate(-50%, -50%)";
 titleContainer.style.display = "flex";
 titleContainer.style.alignItems = "center";
@@ -61,8 +61,8 @@ const animateLogo = () => {
 
   // Move to final position and fade out overlay
   setTimeout(() => {
-    titleContainer.style.top = "10px";
-    titleContainer.style.left = "10px";
+    titleContainer.style.top = "40px";
+    titleContainer.style.left = "240px";
     titleContainer.style.transform = "translate(0, 0)";
     overlay.style.opacity = "0";
   }, 1500);
